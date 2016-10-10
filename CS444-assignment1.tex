@@ -1,0 +1,158 @@
+\documentclass[letterpaper,10pt]{article}
+
+\usepackage{geometry}
+\geometry{textheight=8.5in, textwidth=6in}
+
+\newcommand{\toc}{\tableofcontents}
+
+\def\name{Helena A. Bales}
+\title{CS 444 Project 1: Getting Acquainted}
+\author{Helena A. Bales}
+
+%% The following metadata will show up in the PDF properties
+% \hypersetup{
+%   colorlinks = false,
+%   urlcolor = black,
+%   pdfauthor = {\name},
+%   pdfkeywords = {cs444 ``operating systems''},
+%   pdftitle = {CS 444 Project 1: Getting Acquainted},
+%   pdfsubject = {CS 444 Project 1},
+%   pdfpagemode = UseNone
+% }
+
+\parindent = 0.0 in
+\parskip = 0.1 in
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+This document contains a log of commands used to complete the qemu orientation
+given in the project description, and explanation of every flag in the listed
+qemu command line, answers to questions related to the concurrency exercise, a
+version control log formatted as a table, and a work log. These documents form
+the solution to project 1. The purpose of this project is to get acquainted with
+the tools used throughout Operating Systems II, and to solve the concurrency
+programming problem. The concurrency problem allows for the development of
+thinking in parallel, and for practicing threads and programming C and ASM. The
+commands used to start a linux virtual machine serves as practice using qemu and
+building the Linux kernel. This assignment shall serve as a foundation for the
+skills required for the Operating Systems II course.
+\end{abstract}
+
+\clearpage
+
+\tableofcontents
+
+\clearpage
+
+\section{Section 1: Command Log}
+The commands used to perform the actions requested by the project description
+for Project 1 of Operating Systems II.  The actions comprise of setting up and
+starting the virtual machine using qemu, changing the config file, building the
+linux kernel, and starting the virtual machine using the new kernel.
+
+\subsection{Commands to Set Up and Launch Qemu}
+\begin{itemize}
+\item ssh balesh@os-class.engr.oregonstate.edu
+\item mkdir /scratch/fall2016/cs444-026
+\item cd /scratch/fall2016/cs444-026
+\item git init
+\item git clone git://git.yoctoproject.org/linux-yocto-3.14
+\item git remote add origin https://github.com/balesh2/CS444-1.git
+\item git add --all
+\item git commit
+\item git push origin master
+\item cp /scratch/fall2016/files/* ./
+\item cp /scratch/opt/environment-setup-i586-poky-linux.csh ./
+\item source ./environment-setup-i586-poky-linux.csh
+\item mv ./config-3.14.26-yocto-qemu ./.config
+\item qemu-system-i386 -gdb tcp::5526 -S -nographic -kernel bzImage-qemux86.bin -drive \-file=core-image-lsb-sdk-qemux86.ext3,if=virtio -enable-kvm -net none -usb \- -localtime --no-reboot --append "root=/dev/vda rw console=ttyS0 debug".
+\item gdb
+\begin{itemize}
+\item target remote :5526
+\item continue
+\end{itemize}
+\end{itemize}
+
+\subsection{Commands to Build Kernel and Launch Qemu}
+\begin{itemize}
+\item cd /scratch/fall2016/cs444-026/
+\item cp /scratch/fall2016/files/config-3.14.26-yocto-qemu ./.config
+\item make -j4 all
+\item source ./environment-setup-i586-poky-linux.csh
+\item qemu-system-i386 -gdb tcp::5526 -S -nographic -kernel bzImage-qemux86.bin -drive \-file=core-image-lsb-sdk-qemux86.ext3,if=virtio -enable-kvm -net none -usb \- -localtime --no-reboot --append "root=/dev/vda rw console=ttyS0 debug".
+\item gdb
+\begin{itemize}
+\item target remote :5526
+\item continue
+\end{itemize}
+\end{itemize}
+
+
+\section{Section 2: Explanation of Qemu Flags}
+The flags for the following command will be explaned: \newline
+qemu-system-i386 -gdb tcp::5526 -S -nographic -kernel bzImage-qemux86.bin -drive
+file=core-image-lsb-sdk-qemux86.ext3,if=virtio -enable-kvm -net none -usb
+-localtime --no-reboot --append "root=/dev/vda rw console=ttyS0 debug".\newline
+
+\subsection{Explanation of All Qemu Command Line Flags}
+\begin{itemize}
+\item -gdb : 
+\item tcp::5526 :
+\item -S :
+\item -nographic :
+\item -kernel bzImage-qemux86.bin :
+\item -drive file=core-image-lsb-sdk-qemux86.ext3,if=virtio :
+\item -enable-kvm :
+\item -net none :
+\item -usb :
+\item -localtime :
+\item --no-reboot :
+\item --append "root=/dev/vda rw console=ttyS0 debug". :
+\end{itemize}
+
+\section{Section 3: Concurrency Description}
+\subsection{Purpose of Assignment}
+The purpose of this assignment is to create a simple program for concurrency
+synchronization. This is important because creating a solution to this problem
+requires parallel thinking, which is an important skill to have in industry.
+This problem presents a possible solution to the event handler issue where one
+buffer contains items to be added or removed by threads. In this problem,
+consumers remove items from the buffer and producers create items and add them
+to the buffer. When trying to perform both actions of adding to and removing
+from the buffer, the buffer must be locked in order to insure that only one
+thread can make changes at once to avoid conflicts.
+\subsection{Approach to Problem}
+My approach to this problem is to generate the consumer threads in main using a
+loop. Each consumer is given a value in the range of 0 to 31. Mutex is used for
+synchronization. The consumer locks the mutex and modifies the buffer. After
+making modifications it removes the locks and sleeps, then prints the values.
+The producer is implemented using a loop in main, from 0 to 31. It takes the
+mutex locks and fills in one of the elements in the buffer. After that the lock
+is removed and it sleeps before printing and repeating, similar to the process
+for the consumer.
+\subsection{Testing of Solution}
+I tested the solution by providing a variety of inputs and checking that the
+output matched the expected. I gave it various numbers of consumers to create,
+in the range of 0 to 31, and values greater than 31.
+\subsection{Learning Outcomes}
+
+\section{Section 4: Version Control Logs}
+
+\section{Section 5: Work Log}
+\subsection{October 9th, 2016 - 3:00 pm}
+Created folder on class server called cs444-026.
+Cloned kernel from given repository.
+\subsection{October 10th, 2016 - 10:00 am}
+Set up environment configuration.
+Copyied files from /scratch/fall2016/files/.
+Started up VM.
+Copyied file from /scratch/fall2016/files/config-3.14.26-yocto-qemu.
+Built Linux kernel.
+Started VM with new kernel.
+\subsection{October 10th, 2016 - 3:30 pm}
+Started \LaTeX write-up of assignment.
+
+
+\end{document}
