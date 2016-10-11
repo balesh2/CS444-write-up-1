@@ -98,18 +98,21 @@ file=core-image-lsb-sdk-qemux86.ext3,if=virtio -enable-kvm -net none -usb
 
 \subsection{Explanation of All Qemu Command Line Flags}
 \begin{itemize}
-\item -gdb : 
-\item tcp::5526 :
-\item -S :
-\item -nographic :
-\item -kernel bzImage-qemux86.bin :
-\item -drive file=core-image-lsb-sdk-qemux86.ext3,if=virtio :
-\item -enable-kvm :
-\item -net none :
-\item -usb :
-\item -localtime :
-\item --no-reboot :
-\item --append "root=/dev/vda rw console=ttyS0 debug". :
+\item -gdb : Blocks the boot sequence until continued from GDB.
+\item tcp::5526 : Sets the TCP port number to my assigned port.
+\item -S : Do not start CPU at startup. Start CPU by typing 'c' in the monitor.
+\item -nographic : Totally disable visuals so that qemu is a simple command line
+application.
+\item -kernel bzImage-qemux86.bin : Specifies the kernel image to be used.
+\item -drive file=core-image-lsb-sdk-qemux86.ext3,if=virtio : Opens the specific
+kernel image file.
+\item -enable-kvm : Enabel KVM full virtualization support.
+\item -net none : Does not create a Network Interface Card.
+\item -usb : Enable the USB driver.
+\item -localtime : Sets time to local computer time.
+\item --no-reboot : Exit instead of rebooting.
+\item --append "root=/dev/vda rw console=ttyS0 debug". : Sets root and
+read/write settings.
 \end{itemize}
 
 \section{Section 3: Concurrency Description}
@@ -137,22 +140,37 @@ I tested the solution by providing a variety of inputs and checking that the
 output matched the expected. I gave it various numbers of consumers to create,
 in the range of 0 to 31, and values greater than 31.
 \subsection{Learning Outcomes}
+Through this assignment I learned about the need for locking the buffer when it
+is being modified. This is important since it is in flux when a thread is
+modifying it. Since this is the case, it can only be modified by one thread at
+once. Additionally, I was reminded of how to create threads in C. I learned how
+to use Mutex to lock.
 
 \section{Section 4: Version Control Logs}
 
 \section{Section 5: Work Log}
 \subsection{October 9th, 2016 - 3:00 pm}
 Created folder on class server called cs444-026.
+
 Cloned kernel from given repository.
 \subsection{October 10th, 2016 - 10:00 am}
 Set up environment configuration.
+
 Copyied files from /scratch/fall2016/files/.
+
 Started up VM.
+
 Copyied file from /scratch/fall2016/files/config-3.14.26-yocto-qemu.
+
 Built Linux kernel.
+
 Started VM with new kernel.
 \subsection{October 10th, 2016 - 3:30 pm}
 Started \LaTeX write-up of assignment.
+
+Started concurrency program.
+\subsection{October 10th, 2016 - 5:15 pm}
+Finished write up except for concurrency problem and version control log.
 
 
 \end{document}

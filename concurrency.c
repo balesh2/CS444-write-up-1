@@ -3,6 +3,11 @@
 #include <unistd.h>
 #include <pthread.h>
 
+struct args{
+  long tid;
+  long sleep_time;
+};
+
 /* A C-program for MT19937, with initialization improved 2002/1/26.
  * Coded by Takuji Nishimura and Makoto Matsumoto.
  *
@@ -142,7 +147,32 @@ double genrand_res53(void)
 
 /* END C Program for MT19937 */
 
-int main(void)
-{
+int main(int argc, char **argv) {
+  //init variables
+  unsigned long init[4] = {0x123, 0x234, 0x345, 0x456};
+  unsigned long length = 4;
+  unsigned int eax, ebx, ecx, edx;
+  int mt = 0;
+  char vendor[13];
+
+  //print number of consumers
+  printf("Number of consumers that will be created: %s \n", argv[1]);
+
+  eax = 0x01;
+
+  __asm__ __volatile__(
+      "cpuid;"
+      : "=a"(eax), "=b"(ebx), "=c"(ecx), "=d"(edx)
+      : "a"(eax)
+      );
+
+  //use mt19937
+  mt = 1;
+  time_t t;
+  init_genrand((unsigned) time(&t));
+
+  pthread_t threads[atoi(argv[1])];
+
+
   return 0;
 }
